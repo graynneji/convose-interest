@@ -2,6 +2,7 @@ import { useSearch } from "@/hook/useSearch";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Text, Image, View, StyleSheet, TextInput, TouchableWithoutFeedback, Keyboard, FlatList, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
 import debounce from "lodash/debounce";
+import { getRandomColor } from "@/utils";
 
 export type ListType = {
   id: number,
@@ -14,14 +15,20 @@ export type ListType = {
 }
 
 function Item({ item }: { item: ListType }) {
+  const letterImage = item.name.split("")
+  const backgroundColor = getRandomColor()
   return (
-    <View style={styles.dropdown}>
-      <View style={{ alignItems: "center", flexDirection: "row", marginBottom: 10 }}>
+    <View >
+      <View style={{ alignItems: "center", flexDirection: "row", marginBottom: 10, marginTop: "auto", gap: 10 }}>
 
-        <Image
+        {item.avatar ? (<Image
           source={{ uri: `${item.avatar}` }}
           style={{ width: 40, height: 40 }}
-        />
+        />) : (
+          <View style={{ width: 40, height: 40, backgroundColor, borderRadius: 40 / 2, justifyContent: "center" }}>
+            <Text style={styles.imagePic}>{letterImage[0]}</Text>
+          </View>
+        )}
         <Text style={styles.list}>{item.name}</Text>
       </View>
     </View>
@@ -85,7 +92,7 @@ export default function HomeScreen() {
         {isFocused && (
           <View style={styles.dropdown}>
             {isLoading && (
-              <ActivityIndicator size="large" color="grey" style={{
+              <ActivityIndicator size="large" color="white" style={{
                 paddingTop: 10, position: "absolute", top: 10,
                 left: "50%",
                 transform: [{ translateX: -12 }]
@@ -123,7 +130,8 @@ export const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-end",
     alignItems: "center",
-    marginBottom: 50
+    marginBottom: 50,
+
   },
   input: {
     height: 60,
@@ -136,29 +144,34 @@ export const styles = StyleSheet.create({
     // backgroundColor: "#999999b"
   },
   inputContainer: {
-    backgroundColor: "#1c1c1eab",
+    backgroundColor: "#1c1c1e",
     width: "100%",
     padding: 10,
     height: "auto"
   },
   dropdown: {
     width: "100%",
-    backgroundColor: "#999999b",
+    backgroundColor: "#1c1c1e",
     color: "white",
     flex: 1,
-  },
-  scroll: {
-    width: 20
+    justifyContent: "center",
   },
   flat: {
     borderWidth: 1,
     padding: 10,
-    height: 40
+    height: 40,
   },
   list: {
     fontSize: 16,
     minHeight: "auto",
     alignSelf: "center",
-    height: 40,
+    justifyContent: "center",
+    color: "white",
+    fontWeight: 500
+  },
+  imagePic: {
+    color: "white",
+    alignSelf: "center",
+
   }
 })
