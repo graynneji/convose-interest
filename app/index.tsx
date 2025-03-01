@@ -1,8 +1,9 @@
 import { useSearch } from "@/hook/useSearch";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { Text, Image, View, StyleSheet, TextInput, TouchableWithoutFeedback, Keyboard, FlatList, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { View, TextInput, TouchableWithoutFeedback, Keyboard, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
 import debounce from "lodash/debounce";
-import { getRandomColor } from "@/utils";
+import List from "@/component/List";
+import { styles } from "@/styles/styles"
 
 export type ListType = {
   id: number,
@@ -11,29 +12,8 @@ export type ListType = {
   avatar: string,
   color: string,
   existing: boolean,
-  type: string
+  type: string,
 }
-
-const MemoItem = memo(function Item({ item }: { item: ListType }) {
-  const letterImage = item.name.split("")
-  const backgroundColor = getRandomColor()
-  return (
-
-    <View style={{ alignItems: "center", flexDirection: "row", marginBottom: 20, gap: 10 }}>
-
-      {item.avatar ? (<Image
-        source={{ uri: `${item.avatar}` }}
-        style={{ width: 40, height: 40 }}
-      />) : (
-        <View style={{ width: 40, height: 40, backgroundColor, borderRadius: 40 / 2, justifyContent: "center" }}>
-          <Text style={styles.imagePic}>{letterImage[0]}</Text>
-        </View>
-      )}
-      <Text style={styles.list}>{item.name}</Text>
-    </View>
-
-  )
-})
 
 export default function HomeScreen() {
   const [query, setQuery] = useState<string>("");
@@ -98,13 +78,7 @@ export default function HomeScreen() {
                 transform: [{ translateX: -12 }]
               }} />
             )}
-            <FlatList
-              data={searchResults}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => <MemoItem item={item} />}
-              style={styles.flat}
-              inverted={true}
-            />
+            <List data={searchResults} error={error} />
           </View>
         )}
         <View style={styles.inputContainer}>
@@ -125,53 +99,3 @@ export default function HomeScreen() {
 }
 
 
-export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "flex-end",
-    alignItems: "center",
-    marginBottom: 50,
-
-  },
-  input: {
-    height: 60,
-    borderWidth: 2,
-    padding: 10,
-    width: "100%",
-    borderRadius: 100,
-    color: "white",
-    borderColor: "#ffffffac"
-    // backgroundColor: "#999999b"
-  },
-  inputContainer: {
-    backgroundColor: "#1c1c1e",
-    width: "100%",
-    padding: 10,
-    height: "auto"
-  },
-  dropdown: {
-    width: "100%",
-    backgroundColor: "#1c1c1e",
-    color: "white",
-    flex: 1,
-    justifyContent: "center",
-  },
-  flat: {
-    borderWidth: 1,
-    padding: 10,
-    height: 40,
-  },
-  list: {
-    fontSize: 16,
-    minHeight: "auto",
-    alignSelf: "center",
-    justifyContent: "center",
-    color: "white",
-    fontWeight: 200,
-  },
-  imagePic: {
-    color: "white",
-    alignSelf: "center",
-
-  }
-})
