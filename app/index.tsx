@@ -1,5 +1,5 @@
 import { useSearch } from "@/hook/useSearch";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Text, Image, View, StyleSheet, TextInput, TouchableWithoutFeedback, Keyboard, FlatList, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
 import debounce from "lodash/debounce";
 import { getRandomColor } from "@/utils";
@@ -14,26 +14,26 @@ export type ListType = {
   type: string
 }
 
-function Item({ item }: { item: ListType }) {
+const MemoItem = memo(function Item({ item }: { item: ListType }) {
   const letterImage = item.name.split("")
   const backgroundColor = getRandomColor()
   return (
-    <View >
-      <View style={{ alignItems: "center", flexDirection: "row", marginBottom: 10, marginTop: "auto", gap: 10 }}>
 
-        {item.avatar ? (<Image
-          source={{ uri: `${item.avatar}` }}
-          style={{ width: 40, height: 40 }}
-        />) : (
-          <View style={{ width: 40, height: 40, backgroundColor, borderRadius: 40 / 2, justifyContent: "center" }}>
-            <Text style={styles.imagePic}>{letterImage[0]}</Text>
-          </View>
-        )}
-        <Text style={styles.list}>{item.name}</Text>
-      </View>
+    <View style={{ alignItems: "center", flexDirection: "row", marginBottom: 20, gap: 10 }}>
+
+      {item.avatar ? (<Image
+        source={{ uri: `${item.avatar}` }}
+        style={{ width: 40, height: 40 }}
+      />) : (
+        <View style={{ width: 40, height: 40, backgroundColor, borderRadius: 40 / 2, justifyContent: "center" }}>
+          <Text style={styles.imagePic}>{letterImage[0]}</Text>
+        </View>
+      )}
+      <Text style={styles.list}>{item.name}</Text>
     </View>
+
   )
-}
+})
 
 export default function HomeScreen() {
   const [query, setQuery] = useState<string>("");
@@ -101,7 +101,7 @@ export default function HomeScreen() {
             <FlatList
               data={searchResults}
               keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => <Item item={item} />}
+              renderItem={({ item }) => <MemoItem item={item} />}
               style={styles.flat}
               inverted={true}
             />
@@ -167,7 +167,7 @@ export const styles = StyleSheet.create({
     alignSelf: "center",
     justifyContent: "center",
     color: "white",
-    fontWeight: 500
+    fontWeight: 200,
   },
   imagePic: {
     color: "white",
