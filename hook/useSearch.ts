@@ -17,6 +17,7 @@ export function useSearch(query: string) {
   });
   return { data, error, isLoading, isError };
 }
+
 // export function useSearch(query: string) {
 //   const [response, setResponse] = useState<{ autocomplete?: ListType[] }>({});
 //   const [isLoading, setIsLoading] = useState<boolean>(false);

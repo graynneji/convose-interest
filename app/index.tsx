@@ -1,6 +1,6 @@
 import { useSearch } from "@/hook/useSearch";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, Keyboard, FlatList, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Text, Image, View, StyleSheet, TextInput, TouchableWithoutFeedback, Keyboard, FlatList, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
 import debounce from "lodash/debounce";
 
 export type ListType = {
@@ -16,7 +16,14 @@ export type ListType = {
 function Item({ item }: { item: ListType }) {
   return (
     <View style={styles.dropdown}>
-      <Text style={styles.list}>{item.name}</Text>
+      <View style={{ alignItems: "center", flexDirection: "row", marginBottom: 10 }}>
+
+        <Image
+          source={{ uri: `${item.avatar}` }}
+          style={{ width: 40, height: 40 }}
+        />
+        <Text style={styles.list}>{item.name}</Text>
+      </View>
     </View>
   )
 }
@@ -28,19 +35,25 @@ export default function HomeScreen() {
   const [debounceQuery, setDebounceQuery] = useState<string>("");
   const { data: result, isLoading, error } = useSearch(debounceQuery);
 
+  // I created a new instance of a Map to make unique when the api fetches new data it duplicates if there are exixting properties
   const unique = new Map()
 
+  //I created a useEffect to update the state and new data is added to the prev when result changes. I used the id as key to remove duplicates
   useEffect(() => {
     if (result?.autocomplete) {
       setSavedResults((prev: ListType[]) => {
+        //I added the old data in the Map
         prev.forEach((item) => unique.set(item.id, item))
+        //I updated new data into the set this helps keep it unique removing duplicates
         result.autocomplete.forEach((item: ListType) => unique.set(item.id, item));
+        //then i retruned the values of the Map and converted it to an araay 
         return Array.from(unique.values());
       });
     }
 
   }, [result]);
 
+  //I handled the search and filters here 
   const searchResults = useMemo(() => {
     return savedResults.filter((item) =>
       item.name.toLowerCase().includes(query.toLowerCase())
@@ -53,7 +66,7 @@ export default function HomeScreen() {
     []
   );
 
-
+  //I set the query into the debounce
   useEffect(() => {
     debounceSearch(query);
     return () => debounceSearch.cancel()
@@ -62,6 +75,7 @@ export default function HomeScreen() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      {/* i used this to enables the search view stay on top of the keyboard */}
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
@@ -144,7 +158,7 @@ export const styles = StyleSheet.create({
   list: {
     fontSize: 16,
     minHeight: "auto",
-    alignSelf: "flex-start",
-    height: 40
+    alignSelf: "center",
+    height: 40,
   }
 })

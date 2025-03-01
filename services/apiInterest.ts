@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// I created an axios instance with all the headers specified in the api documentation
 export const apiInterest = axios.create({
   baseURL: "https:be-v2.convose.com",
   headers: {
